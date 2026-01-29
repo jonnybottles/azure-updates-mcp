@@ -34,3 +34,6 @@ htmlcov/
 # Other
 .DS_Store
 *.log
+
+# Claude Code local settings (contains user-specific permissions)
+.claude/settings.local.json
