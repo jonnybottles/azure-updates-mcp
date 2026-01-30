@@ -2,18 +2,14 @@
 
 from datetime import datetime
 
+import httpx
+from fastmcp import Context
+
 from ..feeds.azure_rss import fetch_updates
+from ..models.input_models import SearchInput
 
 
-async def azure_updates_search(
-    query: str | None = None,
-    category: str | None = None,
-    status: str | None = None,
-    start_date: str | None = None,
-    end_date: str | None = None,
-    guid: str | None = None,
-    limit: int = 10,
-) -> dict:
+async def azure_updates_search(ctx: Context, input: SearchInput) -> dict:
     """Search, filter, and retrieve Azure service updates from the official RSS feed.
 
     Combines keyword search, category filtering, status filtering, and date range
@@ -30,20 +26,7 @@ async def azure_updates_search(
     - Combine any of the above (query="networking" + status="Launched" + category="AKS")
 
     Args:
-        query: Optional keyword to match against title and description (case-insensitive).
-        category: Optional category to filter by (case-insensitive partial match,
-            e.g. "AKS" matches "Azure Kubernetes Service (AKS)").
-        status: Optional status filter. Valid values: Launched, In preview,
-            In development, Retirements.
-        start_date: Optional start date in ISO format (YYYY-MM-DD). Only include
-            updates published on or after this date.
-        end_date: Optional end date in ISO format (YYYY-MM-DD). Only include
-            updates published on or before this date. Defaults to today when
-            start_date is provided.
-        guid: Optional unique identifier to retrieve a single specific update.
-            When provided, all other filters are ignored and a single update is returned.
-        limit: Maximum number of results to return (default: 10, max: 100).
-            Ignored when guid is provided.
+        input: SearchInput model with query, category, status, start_date, end_date, guid, and limit parameters
 
     Returns:
         Dictionary with:
@@ -51,55 +34,66 @@ async def azure_updates_search(
         - updates: List of matching update objects (up to limit)
         - filters_applied: Summary of which filters were used
     """
-    updates = await fetch_updates()
+    try:
+        await ctx.info("Fetching Azure updates from RSS feed...")
+        updates = await fetch_updates()
+        await ctx.info(f"Retrieved {len(updates)} updates from feed")
+    except httpx.HTTPError as e:
+        await ctx.error(f"Failed to fetch updates: {str(e)}")
+        return {
+            "total_found": 0,
+            "updates": [],
+            "filters_applied": {"error": f"Failed to fetch Azure updates: {str(e)}"},
+        }
 
     # GUID lookup is a fast path that ignores all other filters
-    if guid:
+    if input.guid:
+        await ctx.info(f"Looking up update by GUID: {input.guid}")
         for update in updates:
-            if update.guid == guid:
+            if update.guid == input.guid:
                 return {
                     "total_found": 1,
                     "updates": [update.to_dict()],
-                    "filters_applied": {"guid": guid},
+                    "filters_applied": {"guid": input.guid},
                 }
         return {
             "total_found": 0,
             "updates": [],
-            "filters_applied": {"guid": guid},
+            "filters_applied": {"guid": input.guid},
         }
 
-    # Clamp limit to reasonable bounds
-    limit = max(1, min(limit, 100))
+    # Limit is already validated by Pydantic (1-100)
+    limit = input.limit
 
     # Parse date filters
     start_dt = None
     end_dt = None
-    if start_date:
+    if input.start_date:
         try:
-            start_dt = datetime.fromisoformat(start_date).replace(tzinfo=None)
+            start_dt = datetime.fromisoformat(input.start_date).replace(tzinfo=None)
         except ValueError:
             return {
                 "total_found": 0,
                 "updates": [],
-                "filters_applied": {"error": f"Invalid start_date format: {start_date}"},
+                "filters_applied": {"error": f"Invalid start_date format: {input.start_date}"},
             }
-    if end_date:
+    if input.end_date:
         try:
-            end_dt = datetime.fromisoformat(end_date).replace(tzinfo=None)
+            end_dt = datetime.fromisoformat(input.end_date).replace(tzinfo=None)
         except ValueError:
             return {
                 "total_found": 0,
                 "updates": [],
-                "filters_applied": {"error": f"Invalid end_date format: {end_date}"},
+                "filters_applied": {"error": f"Invalid end_date format: {input.end_date}"},
             }
     elif start_dt:
         # Default end_date to now when start_date is provided
         end_dt = datetime.now().replace(tzinfo=None)
 
     # Prepare lowercase values for case-insensitive matching
-    query_lower = query.lower() if query else None
-    category_lower = category.lower() if category else None
-    status_lower = status.lower() if status else None
+    query_lower = input.query.lower() if input.query else None
+    category_lower = input.category.lower() if input.category else None
+    status_lower = input.status.lower() if input.status else None
 
     # Apply all filters
     matched = []
@@ -134,16 +128,16 @@ async def azure_updates_search(
 
     # Build filters summary
     filters_applied: dict = {}
-    if query:
-        filters_applied["query"] = query
-    if category:
-        filters_applied["category"] = category
-    if status:
-        filters_applied["status"] = status
-    if start_date:
-        filters_applied["start_date"] = start_date
-    if end_date or end_dt:
-        filters_applied["end_date"] = end_date or end_dt.strftime("%Y-%m-%d")
+    if input.query:
+        filters_applied["query"] = input.query
+    if input.category:
+        filters_applied["category"] = input.category
+    if input.status:
+        filters_applied["status"] = input.status
+    if input.start_date:
+        filters_applied["start_date"] = input.start_date
+    if input.end_date or end_dt:
+        filters_applied["end_date"] = input.end_date or end_dt.strftime("%Y-%m-%d")
     if not filters_applied:
         filters_applied["note"] = "No filters applied, returning most recent updates"
 

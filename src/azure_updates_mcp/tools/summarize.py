@@ -3,13 +3,14 @@
 from collections import Counter
 from datetime import datetime, timedelta
 
+import httpx
+from fastmcp import Context
+
 from ..feeds.azure_rss import fetch_updates
+from ..models.input_models import SummarizeInput
 
 
-async def azure_updates_summarize(
-    weeks: int | None = None,
-    top_n: int = 10,
-) -> dict:
+async def azure_updates_summarize(ctx: Context, input: SummarizeInput) -> dict:
     """Get aggregate statistics and a structured summary of Azure service updates.
 
     Provides a dashboard-style overview of Azure updates including counts by status,
@@ -22,10 +23,7 @@ async def azure_updates_summarize(
     - Control how many top categories and highlights are shown (top_n=5)
 
     Args:
-        weeks: Optional number of weeks to look back. When omitted, summarizes
-            all available updates. Range: 1-12 when provided.
-        top_n: Number of top categories and highlighted updates to include
-            (default: 10, max: 50).
+        input: SummarizeInput model with weeks and top_n parameters
 
     Returns:
         Dictionary containing:
@@ -35,15 +33,27 @@ async def azure_updates_summarize(
         - date_range: Oldest and newest update dates (and period info if weeks specified)
         - highlights: Most recent N updates with title, link, status, date, categories
     """
-    # Clamp top_n
-    top_n = max(1, min(top_n, 50))
+    # top_n is already validated by Pydantic (1-50)
+    top_n = input.top_n
 
-    updates = await fetch_updates()
+    try:
+        await ctx.info("Fetching Azure updates for summarization...")
+        updates = await fetch_updates()
+        await ctx.info(f"Retrieved {len(updates)} updates from feed")
+    except httpx.HTTPError as e:
+        await ctx.error(f"Failed to fetch updates: {str(e)}")
+        return {
+            "total_updates": 0,
+            "by_status": {},
+            "top_categories": [],
+            "date_range": {"error": f"Failed to fetch Azure updates: {str(e)}"},
+            "highlights": [],
+        }
 
     # Apply time window filter if specified
     period_info: dict | None = None
-    if weeks is not None:
-        weeks = max(1, min(weeks, 12))
+    if input.weeks is not None:
+        weeks = input.weeks
         end_date = datetime.now()
         start_date = end_date - timedelta(weeks=weeks)
 

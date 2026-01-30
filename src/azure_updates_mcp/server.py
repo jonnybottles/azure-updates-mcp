@@ -1,9 +1,8 @@
 """Azure Updates MCP Server - FastMCP server with stdio/HTTP transport."""
 
-import os
-
 from fastmcp import FastMCP
 
+from .config import Config
 from .tools.categories import azure_updates_list_categories
 from .tools.ping import ping
 from .tools.search import azure_updates_search
@@ -33,14 +32,10 @@ def main():
     Uses stdio transport by default (for MCP client auto-start).
     Set MCP_TRANSPORT=http to run as an HTTP server for remote access.
     """
-    transport = os.getenv("MCP_TRANSPORT", "stdio")
-
-    if transport == "http":
-        host = os.getenv("MCP_HOST", "0.0.0.0")
-        port = int(os.getenv("MCP_PORT", "8000"))
-        print(f"Starting Azure Updates MCP server on {host}:{port}")
-        print(f"MCP endpoint: http://{host}:{port}/mcp")
-        mcp.run(transport="http", host=host, port=port)
+    if Config.MCP_TRANSPORT == "http":
+        print(f"Starting Azure Updates MCP server on {Config.MCP_HOST}:{Config.MCP_PORT}")
+        print(f"MCP endpoint: http://{Config.MCP_HOST}:{Config.MCP_PORT}/mcp")
+        mcp.run(transport="http", host=Config.MCP_HOST, port=Config.MCP_PORT)
     else:
         # stdio transport (default for MCP client auto-start)
         mcp.run(transport="stdio")

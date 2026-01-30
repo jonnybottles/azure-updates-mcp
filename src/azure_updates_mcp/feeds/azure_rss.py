@@ -7,9 +7,12 @@ from email.utils import parsedate_to_datetime
 import feedparser
 import httpx
 
+from ..config import Config
 from ..models.update import AzureUpdate
 
-AZURE_UPDATES_RSS_URL = "https://www.microsoft.com/releasecommunications/api/v2/azure/rss"
+# In-memory cache
+_cache: list[AzureUpdate] | None = None
+_cache_time: datetime | None = None
 
 # Status patterns that appear in titles like "[Launched]", "[In preview]"
 STATUS_PATTERN = re.compile(r"\[(Launched|In preview|In development|Retirements?)\]", re.IGNORECASE)
@@ -21,11 +24,22 @@ STATUS_CATEGORIES = {"launched", "in preview", "in development", "retirements"}
 async def fetch_updates() -> list[AzureUpdate]:
     """Fetch and parse Azure Updates from the RSS feed.
 
+    Uses in-memory caching with a 5-minute TTL to reduce redundant HTTP requests.
+
     Returns:
         List of AzureUpdate objects sorted by publication date (newest first).
     """
+    global _cache, _cache_time
+
+    # Check if we have fresh cached data
+    if _cache is not None and _cache_time is not None:
+        age = datetime.now() - _cache_time
+        if age < Config.CACHE_TTL:
+            return _cache
+
+    # Cache is stale or doesn't exist, fetch fresh data
     async with httpx.AsyncClient() as client:
-        response = await client.get(AZURE_UPDATES_RSS_URL, timeout=30.0)
+        response = await client.get(Config.AZURE_RSS_URL, timeout=Config.RSS_TIMEOUT)
         response.raise_for_status()
 
     feed = feedparser.parse(response.text)
@@ -38,6 +52,11 @@ async def fetch_updates() -> list[AzureUpdate]:
 
     # Sort by publication date, newest first
     updates.sort(key=lambda u: u.pub_date, reverse=True)
+
+    # Update cache
+    _cache = updates
+    _cache_time = datetime.now()
+
     return updates
 
 
@@ -113,7 +132,7 @@ def _extract_status(title: str, categories: list[str]) -> str | None:
     match = STATUS_PATTERN.search(title)
     if match:
         status = match.group(1)
-        # Normalize "Retirements" to "Retirements"
+        # Normalize status casing, preserving "In preview" and "In development"
         return status.capitalize() if status.lower() != "in preview" else "In preview"
 
     # Check categories for status

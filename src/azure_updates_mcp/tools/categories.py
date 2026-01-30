@@ -2,10 +2,13 @@
 
 from collections import Counter
 
+import httpx
+from fastmcp import Context
+
 from ..feeds.azure_rss import fetch_updates
 
 
-async def azure_updates_list_categories() -> dict:
+async def azure_updates_list_categories(ctx: Context) -> dict:
     """List all available categories from Azure updates with occurrence counts.
 
     Returns every unique category tag found across all updates in the RSS feed,
@@ -17,7 +20,17 @@ async def azure_updates_list_categories() -> dict:
         - total_categories: Number of unique categories
         - categories: List of objects with 'name' and 'count', sorted by count descending
     """
-    updates = await fetch_updates()
+    try:
+        await ctx.info("Fetching Azure updates to extract categories...")
+        updates = await fetch_updates()
+        await ctx.info(f"Retrieved {len(updates)} updates from feed")
+    except httpx.HTTPError as e:
+        await ctx.error(f"Failed to fetch updates: {str(e)}")
+        return {
+            "total_categories": 0,
+            "categories": [],
+            "error": f"Failed to fetch Azure updates: {str(e)}",
+        }
 
     category_counter: Counter[str] = Counter()
     for update in updates:

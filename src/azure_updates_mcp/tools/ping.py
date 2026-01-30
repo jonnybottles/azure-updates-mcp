@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 
-def ping() -> dict:
+async def ping() -> dict:
     """Health check endpoint for the Azure Updates MCP server.
 
     Returns:
