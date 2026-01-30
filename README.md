@@ -22,31 +22,41 @@ pip install -e ".[dev]"
 
 ## Usage
 
-### Run locally
+### Run the MCP Server
+
+The server uses stdio transport by default, which is the recommended way to use MCP servers with Claude Desktop and other MCP clients:
 
 ```bash
 python -m azure_updates_mcp.server
 ```
 
-The server starts on `http://0.0.0.0:8000` by default. Configure via environment variables:
+### Connect from Claude Desktop
 
-- `MCP_HOST` - Bind address (default: `0.0.0.0`)
-- `MCP_PORT` - Port number (default: `8000`)
+Add to your Claude Desktop MCP config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
 
-### Connect from Claude Code
-
-```bash
-claude mcp add --transport http azure-updates http://localhost:8000/mcp
+```json
+{
+  "mcpServers": {
+    "azure-updates": {
+      "command": "python",
+      "args": ["-m", "azure_updates_mcp.server"],
+      "cwd": "/path/to/azure-updates-mcp"
+    }
+  }
+}
 ```
 
-### Docker
+Or if using uv:
 
-```bash
-# Build
-docker build -t azure-updates-mcp .
-
-# Run
-docker run -p 8000:8000 azure-updates-mcp
+```json
+{
+  "mcpServers": {
+    "azure-updates": {
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/azure-updates-mcp", "azure-updates-mcp"]
+    }
+  }
+}
 ```
 
 ## Development
