@@ -94,6 +94,18 @@ Or install with pip:
 pip install azure-updates-mcp
 ```
 
+### Upgrade to Latest Version
+
+```bash
+uvx azure-updates-mcp@latest
+```
+
+Or with pip:
+
+```bash
+pip install --upgrade azure-updates-mcp
+```
+
 ### Install from source (for development)
 
 ```bash
