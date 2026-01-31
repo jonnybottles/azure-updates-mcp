@@ -4,7 +4,6 @@ A Python-based MCP (Model Context Protocol) server that provides tools for query
 
 ## Features
 
-- **ping** - Health check endpoint
 - **azure_updates_search** - Search and filter Azure updates by keyword, category, status, date range, or GUID
 - **azure_updates_summarize** - Get statistical overview and trends of Azure updates
 - **azure_updates_list_categories** - List all available Azure service categories

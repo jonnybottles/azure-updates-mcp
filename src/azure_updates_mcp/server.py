@@ -1,11 +1,14 @@
 """Azure Updates MCP Server - FastMCP server with stdio/HTTP transport."""
 
+import logging
 import os
 
 from fastmcp import FastMCP
 
+# Suppress FastMCP's INFO logs to reduce console noise
+logging.getLogger("fastmcp").setLevel(logging.WARNING)
+
 from .tools.categories import azure_updates_list_categories
-from .tools.ping import ping
 from .tools.search import azure_updates_search
 from .tools.summarize import azure_updates_summarize
 
@@ -21,7 +24,6 @@ mcp = FastMCP(
 )
 
 # Register tools
-mcp.tool(ping)
 mcp.tool(azure_updates_search)
 mcp.tool(azure_updates_summarize)
 mcp.tool(azure_updates_list_categories)
@@ -40,10 +42,10 @@ def main():
         port = int(os.getenv("MCP_PORT", "8000"))
         print(f"Starting Azure Updates MCP server on {host}:{port}")
         print(f"MCP endpoint: http://{host}:{port}/mcp")
-        mcp.run(transport="http", host=host, port=port)
+        mcp.run(transport="http", host=host, port=port, show_banner=False)
     else:
         # stdio transport (default for MCP client auto-start)
-        mcp.run(transport="stdio")
+        mcp.run(transport="stdio", show_banner=False)
 
 
 if __name__ == "__main__":

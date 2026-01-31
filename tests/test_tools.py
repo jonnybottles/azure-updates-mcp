@@ -2,21 +2,6 @@
 
 import pytest
 
-from azure_updates_mcp.tools.ping import ping
-
-# ---------------------------------------------------------------------------
-# ping
-# ---------------------------------------------------------------------------
-
-
-def test_ping_returns_status():
-    """Test that ping returns expected structure."""
-    result = ping()
-
-    assert result["status"] == "ok"
-    assert result["service"] == "azure-updates-mcp"
-    assert "timestamp" in result
-
 
 # ---------------------------------------------------------------------------
 # azure_updates_search
