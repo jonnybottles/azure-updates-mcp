@@ -1,3 +1,5 @@
+### Disclaimer: This is an independent, self-built project and is not an official Microsoft tool or service.
+
 # Azure Updates MCP Server
 
 mcp-name: io.github.jonnybottles/azure-updates
