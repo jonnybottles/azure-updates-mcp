@@ -38,5 +38,11 @@ htmlcov/
 .DS_Store
 *.log
 
+# MCP Registry tokens
+.mcpregistry_*
+
+# Publishing tools
+mcp-publisher.exe
+
 # Claude Code local settings (contains user-specific permissions)
 .claude/settings.local.json
