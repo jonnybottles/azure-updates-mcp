@@ -1,1 +1,1 @@
-"""RSS feed handling for Azure Updates."""
+"""Azure Updates JSON API client."""

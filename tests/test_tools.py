@@ -24,15 +24,12 @@ async def test_search_no_filters_returns_recent():
 
 @pytest.mark.asyncio
 async def test_search_by_keyword():
-    """Keyword filter matches title or description."""
+    """Keyword filter uses server-side search."""
     from azure_updates_mcp.tools.search import azure_updates_search
 
     result = await azure_updates_search(query="Azure", limit=5)
 
     assert isinstance(result["updates"], list)
-    for update in result["updates"]:
-        text = (update["title"] + update["description"]).lower()
-        assert "azure" in text
     assert result["filters_applied"].get("query") == "Azure"
 
 
@@ -135,9 +132,55 @@ async def test_search_combined_filters():
 
     assert isinstance(result, dict)
     for update in result["updates"]:
-        text = (update["title"] + update["description"]).lower()
-        assert "azure" in text
         assert update["status"].lower() == "launched"
+
+
+@pytest.mark.asyncio
+async def test_search_with_offset():
+    """Offset parameter enables pagination."""
+    from azure_updates_mcp.tools.search import azure_updates_search
+
+    page1 = await azure_updates_search(limit=3, offset=0)
+    page2 = await azure_updates_search(limit=3, offset=3)
+
+    assert isinstance(page1["updates"], list)
+    assert isinstance(page2["updates"], list)
+
+    # Pages should have different items if enough results
+    if page1["updates"] and page2["updates"]:
+        assert page1["updates"][0]["id"] != page2["updates"][0]["id"]
+
+
+@pytest.mark.asyncio
+async def test_search_result_has_new_fields():
+    """Search results include new JSON API fields."""
+    from azure_updates_mcp.tools.search import azure_updates_search
+
+    result = await azure_updates_search(limit=1)
+
+    if result["updates"]:
+        update = result["updates"][0]
+        # New fields
+        assert "id" in update
+        assert "created" in update
+        assert "products" in update
+        assert "product_categories" in update
+        assert "tags" in update
+        # Backward-compat fields
+        assert "guid" in update
+        assert "pub_date" in update
+        assert "categories" in update
+
+
+@pytest.mark.asyncio
+async def test_search_total_found_reflects_api_count():
+    """total_found should reflect the API's total count, not just returned items."""
+    from azure_updates_mcp.tools.search import azure_updates_search
+
+    result = await azure_updates_search(limit=3)
+
+    # total_found should be >= number of returned items
+    assert result["total_found"] >= len(result["updates"])
 
 
 # ---------------------------------------------------------------------------
@@ -147,7 +190,7 @@ async def test_search_combined_filters():
 
 @pytest.mark.asyncio
 async def test_summarize_all():
-    """Summarize without time window returns overall stats."""
+    """Summarize without time window returns overall stats from facets."""
     from azure_updates_mcp.tools.summarize import azure_updates_summarize
 
     result = await azure_updates_summarize()
@@ -158,6 +201,9 @@ async def test_summarize_all():
     assert "top_categories" in result
     assert "date_range" in result
     assert "highlights" in result
+
+    # Should have a large total from the full API
+    assert result["total_updates"] > 100
 
     # No period info when weeks is not specified
     if result["date_range"]:
@@ -255,3 +301,36 @@ async def test_list_categories():
         first = result["categories"][0]
         assert "name" in first
         assert "count" in first
+
+
+@pytest.mark.asyncio
+async def test_list_categories_has_taxonomy():
+    """List categories returns structured taxonomy facets."""
+    from azure_updates_mcp.tools.categories import azure_updates_list_categories
+
+    result = await azure_updates_list_categories()
+
+    assert "product_categories" in result
+    assert "products" in result
+    assert "tags" in result
+    assert "statuses" in result
+
+    # Should have real data from the API
+    assert len(result["product_categories"]) > 0
+    assert len(result["products"]) > 0
+    assert len(result["statuses"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_list_categories_total_count():
+    """total_categories reflects the merged count of all taxonomy items."""
+    from azure_updates_mcp.tools.categories import azure_updates_list_categories
+
+    result = await azure_updates_list_categories()
+
+    expected_total = (
+        len(result["product_categories"])
+        + len(result["products"])
+        + len(result["tags"])
+    )
+    assert result["total_categories"] == expected_total

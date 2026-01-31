@@ -16,7 +16,7 @@ from .tools.summarize import azure_updates_summarize
 mcp = FastMCP(
     "Azure Updates MCP",
     instructions=(
-        "Query and search Azure service updates from the official RSS feed. "
+        "Query and search Azure service updates from the official JSON API. "
         "Use azure_updates_search to find, filter, and retrieve updates. "
         "Use azure_updates_summarize for aggregate statistics and overviews. "
         "Use azure_updates_list_categories to discover available category values."

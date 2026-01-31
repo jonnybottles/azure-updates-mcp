@@ -1,14 +1,14 @@
 [project]
 name = "azure-updates-mcp"
-version = "0.1.1"
-description = "MCP server for Azure Updates RSS feed"
+version = "0.2.0"
+description = "MCP server for Azure Updates JSON API"
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
     {name = "azure-updates-mcp contributors"}
 ]
-keywords = ["mcp", "azure", "updates", "rss", "model-context-protocol"]
+keywords = ["mcp", "azure", "updates", "api", "model-context-protocol"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -21,7 +21,6 @@ classifiers = [
 dependencies = [
     "fastmcp>=2.14,<3",
     "httpx>=0.28",
-    "feedparser>=6.0",
     "pydantic>=2.0",
 ]
 
