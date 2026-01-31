@@ -7,10 +7,8 @@ import pytest
 from azure_updates_mcp.feeds.azure_api import (
     AzureUpdatesQuery,
     _parse_item,
-    fetch_facets,
     fetch_updates,
 )
-
 
 # ---------------------------------------------------------------------------
 # Unit tests for AzureUpdatesQuery
@@ -185,19 +183,20 @@ def test_parse_item_to_dict():
 
 @pytest.mark.asyncio
 async def test_fetch_updates_returns_tuple():
-    """fetch_updates returns a (list, int) tuple."""
-    updates, total_count = await fetch_updates(top=5)
+    """fetch_updates returns a (list, int, None) tuple."""
+    updates, total_count, facets = await fetch_updates(top=5)
 
     assert isinstance(updates, list)
     assert isinstance(total_count, int)
     assert total_count > 0
     assert len(updates) <= 5
+    assert facets is None
 
 
 @pytest.mark.asyncio
 async def test_fetch_updates_items_have_required_fields():
     """Updates from the API have all required fields."""
-    updates, _ = await fetch_updates(top=3)
+    updates, _, _ = await fetch_updates(top=3)
 
     assert len(updates) > 0
     update = updates[0]
@@ -214,7 +213,7 @@ async def test_fetch_updates_items_have_required_fields():
 @pytest.mark.asyncio
 async def test_fetch_updates_with_search():
     """Search parameter returns relevant results."""
-    updates, total_count = await fetch_updates(search="kubernetes", top=5)
+    updates, total_count, _ = await fetch_updates(search="kubernetes", top=5)
 
     assert isinstance(updates, list)
     assert total_count > 0
@@ -223,8 +222,8 @@ async def test_fetch_updates_with_search():
 @pytest.mark.asyncio
 async def test_fetch_updates_pagination():
     """Pagination with top/skip works."""
-    page1, count1 = await fetch_updates(top=3, skip=0)
-    page2, count2 = await fetch_updates(top=3, skip=3)
+    page1, count1, _ = await fetch_updates(top=3, skip=0)
+    page2, count2, _ = await fetch_updates(top=3, skip=3)
 
     # Total counts should be the same
     assert count1 == count2
@@ -237,7 +236,7 @@ async def test_fetch_updates_pagination():
 @pytest.mark.asyncio
 async def test_fetch_updates_sorted_by_date():
     """Updates are sorted newest first by default."""
-    updates, _ = await fetch_updates(top=10)
+    updates, _, _ = await fetch_updates(top=10)
 
     if len(updates) >= 2:
         for i in range(len(updates) - 1):
@@ -245,13 +244,14 @@ async def test_fetch_updates_sorted_by_date():
 
 
 @pytest.mark.asyncio
-async def test_fetch_facets_returns_taxonomy():
-    """fetch_facets returns structured taxonomy data."""
-    facets = await fetch_facets()
+async def test_fetch_updates_with_facets():
+    """fetch_updates with include_facets=True returns structured taxonomy data."""
+    updates, total_count, facets = await fetch_updates(top=0, include_facets=True)
 
+    assert isinstance(updates, list)
+    assert total_count > 0
+    assert facets is not None
     assert isinstance(facets, dict)
-    assert "total_count" in facets
-    assert facets["total_count"] > 0
     assert "product_categories" in facets
     assert "products" in facets
     assert "tags" in facets

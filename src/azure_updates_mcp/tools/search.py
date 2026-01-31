@@ -16,6 +16,7 @@ async def azure_updates_search(
     offset: int = 0,
     product: str | None = None,
     product_category: str | None = None,
+    include_facets: bool = False,
 ) -> dict:
     """Search, filter, and retrieve Azure service updates from the official JSON API.
 
@@ -34,6 +35,8 @@ async def azure_updates_search(
     - Retrieve a specific update by its GUID/ID (guid="...")
     - Combine any of the above (query="networking" + status="Launched")
     - Paginate with offset (offset=10, limit=10 for page 2)
+    - Discover available categories and taxonomy (include_facets=True, limit=0)
+    - Get an overview with facets + recent items (include_facets=True, limit=10)
 
     Args:
         query: Optional keyword for server-side full-text search.
@@ -49,21 +52,27 @@ async def azure_updates_search(
         guid: Optional unique identifier to retrieve a single specific update.
             When provided, all other filters are ignored and a single update is returned.
         limit: Maximum number of results to return (default: 10, max: 100).
+            Set to 0 with include_facets=True for a facets-only response.
             Ignored when guid is provided.
         offset: Number of results to skip for pagination (default: 0).
         product: Optional product name filter (exact match against products list).
         product_category: Optional product category filter (exact match).
+        include_facets: When True, includes taxonomy facets (product_categories,
+            products, tags, statuses) with occurrence counts in the response.
+            Use with limit=0 to get only facets (replaces category listing).
 
     Returns:
         Dictionary with:
         - total_found: Number of updates matching the filters (from API count)
         - updates: List of matching update objects (up to limit)
         - filters_applied: Summary of which filters were used
+        - facets: (only when include_facets=True) Taxonomy with product_categories,
+            products, tags, and statuses lists, each containing {name, count} items
     """
     # GUID lookup is a fast path that ignores all other filters
     if guid:
         # Fetch with search for the specific ID
-        updates, _ = await fetch_updates(search=guid, top=20)
+        updates, _, _ = await fetch_updates(search=guid, top=20)
         for update in updates:
             if update.id == guid:
                 return {
@@ -78,7 +87,7 @@ async def azure_updates_search(
         }
 
     # Clamp limit to reasonable bounds
-    limit = max(1, min(limit, 100))
+    limit = max(0, min(limit, 100))
     offset = max(0, offset)
 
     # Parse date filters
@@ -116,15 +125,16 @@ async def azure_updates_search(
     ])
 
     # When client-side filtering is needed, fetch more items to filter from
-    api_top = limit * 5 if needs_client_filter else limit
+    api_top = max(limit * 5, 1) if needs_client_filter else limit
     api_skip = 0 if needs_client_filter else offset
 
-    updates, total_count = await fetch_updates(
+    updates, total_count, facets = await fetch_updates(
         search=query,
         status=status,
         top=api_top,
         skip=api_skip,
         order_by="created desc",
+        include_facets=include_facets,
     )
 
     # Apply client-side filters
@@ -189,8 +199,11 @@ async def azure_updates_search(
     if not filters_applied:
         filters_applied["note"] = "No filters applied, returning most recent updates"
 
-    return {
+    response = {
         "total_found": total_found,
         "updates": [u.to_dict() for u in result_updates],
         "filters_applied": filters_applied,
     }
+    if facets is not None:
+        response["facets"] = facets
+    return response
