@@ -20,6 +20,20 @@ A Python-based MCP (Model Context Protocol) server that provides tools for query
 - **azure_updates_summarize** - Get statistical overview and trends of Azure updates
 - **azure_updates_list_categories** - List all available Azure service categories
 
+## Prompt Examples
+
+Once connected to Claude Desktop, you can ask questions like:
+
+1. **Get recent updates**: "Show me the 10 most recent Azure updates"
+
+2. **Search by keyword**: "Find all Azure updates related to Kubernetes or AKS"
+
+3. **Filter by status**: "What Azure features are currently in preview?"
+
+4. **Check for retirements**: "Are there any upcoming Azure service retirements I should know about?"
+
+5. **Get overview**: "Give me a summary of Azure update activity over the last 2 weeks"
+
 ## Installation
 
 ### Install from PyPI
@@ -180,20 +194,6 @@ Add to your Copilot CLI MCP config (`~/.copilot/mcp-config.json`):
   }
 }
 ```
-
-## Usage Examples
-
-Once connected to Claude Desktop, you can ask questions like:
-
-1. **Get recent updates**: "Show me the 10 most recent Azure updates"
-
-2. **Search by keyword**: "Find all Azure updates related to Kubernetes or AKS"
-
-3. **Filter by status**: "What Azure features are currently in preview?"
-
-4. **Check for retirements**: "Are there any upcoming Azure service retirements I should know about?"
-
-5. **Get overview**: "Give me a summary of Azure update activity over the last 2 weeks"
 
 ## Development
 
