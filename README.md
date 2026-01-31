@@ -2,7 +2,7 @@
 
 mcp-name: io.github.jonnybottles/azure-updates
 
-A Python-based MCP (Model Context Protocol) server that provides tools for querying and searching the Azure Updates RSS feed.
+A Python-based MCP (Model Context Protocol) server that provides tools for querying and searching [Azure Updates](https://azure.microsoft.com/en-us/updates/).
 
 ## Requirements
 
@@ -98,9 +98,6 @@ Once connected to an MCP client, you can ask questions like:
 3. **Filter by status**: "What Azure features are currently in preview?"
 4. **Check for retirements**: "Are there any upcoming Azure service retirements I should know about?"
 5. **Get overview**: "Give me a summary of Azure update activity over the last 2 weeks"
-
-
-```
 
 ## Usage
 
