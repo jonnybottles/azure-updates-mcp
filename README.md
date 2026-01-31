@@ -5,12 +5,12 @@ A Python-based MCP (Model Context Protocol) server that provides tools for query
 ## Quick Install
 
 [![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0078d4?style=flat-square&logo=visualstudiocode)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uvx%22%2C%20%22args%22%3A%20%5B%22azure-updates-mcp%22%5D%7D)
-[![Install in Cursor](https://img.shields.io/badge/Install_in-Cursor-000000?style=flat-square&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=azure-updates-mcp&config=eyJjb21tYW5kIjogInV2eCIsICJhcmdzIjogWyJhenVyZS11cGRhdGVzLW1jcCJdfQ==)
+[![Install in Cursor](https://img.shields.io/badge/Install_in-Cursor-000000?style=flat-square&logo=cursor)](https://cursor.com/docs/context/mcp)
 [![Install in Claude Code](https://img.shields.io/badge/Install_in-Claude_Code-9b6bff?style=flat-square&logo=anthropic)](https://code.claude.com/docs/en/mcp)
 [![Install in Copilot CLI](https://img.shields.io/badge/Install_in-Copilot_CLI-28a745?style=flat-square&logo=github)](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
 
-> **One-click install:** Click VS Code or Cursor badges for automatic setup (requires [uv](https://github.com/astral-sh/uv) installed)
-> **Manual install:** See instructions below for Claude Code, Copilot CLI, or Claude Desktop
+> **One-click install:** Click VS Code badge for automatic setup (requires [uv](https://github.com/astral-sh/uv) installed)
+> **Manual install:** See instructions below for Cursor, Claude Code, Copilot CLI, or Claude Desktop
 
 ## Features
 
@@ -76,6 +76,49 @@ Add to your Claude Desktop MCP config:
 ```
 
 **Using installed package**
+
+```json
+{
+  "mcpServers": {
+    "azure-updates": {
+      "command": "azure-updates-mcp"
+    }
+  }
+}
+```
+
+### Connect from Cursor
+
+**Option 1: One-Click Install (Recommended)**
+
+Copy and paste this link into your browser address bar:
+
+```
+cursor://anysphere.cursor-deeplink/mcp/install?name=azure-updates-mcp&config=eyJjb21tYW5kIjogInV2eCIsICJhcmdzIjogWyJhenVyZS11cGRhdGVzLW1jcCJdfQ==
+```
+
+This will open Cursor and prompt you to install the MCP server automatically.
+
+**Option 2: Manual Configuration**
+
+Add to your Cursor MCP config:
+- macOS: `~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
+- Windows: `%APPDATA%\Cursor\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
+
+**Using uvx (recommended):**
+
+```json
+{
+  "mcpServers": {
+    "azure-updates": {
+      "command": "uvx",
+      "args": ["azure-updates-mcp"]
+    }
+  }
+}
+```
+
+**Using installed package:**
 
 ```json
 {
