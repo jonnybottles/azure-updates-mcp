@@ -46,13 +46,32 @@ pip install azure-updates-mcp
 
 In this case, `uv` / `uvx` is **not required**.
 
-### Optional (for development)
+## Installation
 
-- `git`
-- `pytest`
-- `ruff`
+### Install from PyPI
 
----
+```bash
+uvx azure-updates-mcp
+```
+
+Or install with pip:
+
+```bash
+pip install azure-updates-mcp
+```
+
+### Upgrade to Latest Version
+
+```bash
+uvx azure-updates-mcp@latest
+```
+
+Or with pip:
+
+```bash
+pip install --upgrade azure-updates-mcp
+```
+
 
 ## Quick Install
 
@@ -80,38 +99,7 @@ Once connected to an MCP client, you can ask questions like:
 4. **Check for retirements**: "Are there any upcoming Azure service retirements I should know about?"
 5. **Get overview**: "Give me a summary of Azure update activity over the last 2 weeks"
 
-## Installation
 
-### Install from PyPI
-
-```bash
-uvx azure-updates-mcp
-```
-
-Or install with pip:
-
-```bash
-pip install azure-updates-mcp
-```
-
-### Upgrade to Latest Version
-
-```bash
-uvx azure-updates-mcp@latest
-```
-
-Or with pip:
-
-```bash
-pip install --upgrade azure-updates-mcp
-```
-
-### Install from source (for development)
-
-```bash
-git clone https://github.com/YOUR-USERNAME/azure-updates-mcp.git
-cd azure-updates-mcp
-pip install -e ".[dev]"
 ```
 
 ## Usage
