@@ -1,5 +1,7 @@
 # Azure Updates MCP Server
 
+mcp-name: io.github.jonnybottles/azure-updates
+
 A Python-based MCP (Model Context Protocol) server that provides tools for querying and searching the Azure Updates RSS feed.
 
 ## Quick Install

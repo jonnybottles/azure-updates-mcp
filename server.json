@@ -1,0 +1,28 @@
+{
+  "name": "io.github.jonnybottles/azure-updates",
+  "description": "MCP server for Azure Updates RSS feed - search, filter, and summarize Azure service updates",
+  "packages": [
+    {
+      "registry_type": "pypi",
+      "identifier": "azure-updates-mcp",
+      "version": "0.1.0"
+    }
+  ],
+  "repository": "https://github.com/jonnybottles/azure-updates-mcp",
+  "license": "MIT",
+  "homepage": "https://github.com/jonnybottles/azure-updates-mcp",
+  "tools": [
+    {
+      "name": "azure_updates_search",
+      "description": "Search and filter Azure updates by keyword, category, status, date range, or GUID"
+    },
+    {
+      "name": "azure_updates_summarize",
+      "description": "Get statistical overview and trends of Azure updates"
+    },
+    {
+      "name": "azure_updates_list_categories",
+      "description": "List all available Azure service categories"
+    }
+  ]
+}
