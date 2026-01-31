@@ -85,9 +85,7 @@ pip install --upgrade azure-updates-mcp
 
 ## Features
 
-- **azure_updates_search** – Search and filter Azure updates by keyword, category, status, date range, or GUID
-- **azure_updates_summarize** – Get statistical overview and trends of Azure updates
-- **azure_updates_list_categories** – List all available Azure service categories
+- **azure_updates_search** – Search and filter Azure updates by keyword, category, status, date range, or GUID. Set `include_facets=True` to get taxonomy counts (product categories, products, tags, statuses). Use `limit=0` with `include_facets=True` to discover available filter values.
 
 ## Prompt Examples
 
@@ -97,7 +95,7 @@ Once connected to an MCP client, you can ask questions like:
 2. **Search by keyword**: "Find all Azure updates related to Kubernetes or AKS"
 3. **Filter by status**: "What Azure features are currently in preview?"
 4. **Check for retirements**: "Are there any upcoming Azure service retirements I should know about?"
-5. **Get overview**: "Give me a summary of Azure update activity over the last 2 weeks"
+5. **Discover categories**: "What Azure product categories and services are available in the updates?"
 
 ## Usage
 

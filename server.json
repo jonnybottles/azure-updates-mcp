@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.jonnybottles/azure-updates",
-  "description": "MCP server for Azure Updates RSS feed - search, filter, and summarize Azure service updates",
+  "description": "MCP server for Azure Updates JSON API",
   "repository": {
     "url": "https://github.com/jonnybottles/azure-updates-mcp",
     "source": "github"
   },
-  "version": "0.1.1",
+  "version": "0.3.0",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "azure-updates-mcp",
-      "version": "0.1.1",
+      "version": "0.3.0",
       "transport": {
         "type": "stdio"
       }

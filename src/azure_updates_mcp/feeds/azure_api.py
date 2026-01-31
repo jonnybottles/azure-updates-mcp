@@ -51,73 +51,15 @@ class AzureUpdatesQuery:
         return f"{AZURE_UPDATES_API_URL}?{self.to_query_string()}"
 
 
-async def fetch_updates(
-    search: str | None = None,
-    status: str | None = None,
-    top: int = 20,
-    skip: int = 0,
-    order_by: str = "created desc",
-) -> tuple[list[AzureUpdate], int]:
-    """Fetch and parse Azure Updates from the JSON API.
+def _parse_facets(data: dict) -> dict:
+    """Parse facet data from an API response into structured taxonomy.
 
     Args:
-        search: Optional search term for server-side full-text search.
-        status: Optional status filter (applied client-side from results).
-        top: Maximum number of results to return from the API.
-        skip: Number of results to skip (for pagination).
-        order_by: Sort order (default: "created desc").
+        data: Raw JSON response from the Azure Updates API.
 
     Returns:
-        Tuple of (list of AzureUpdate objects, total count from API).
+        Dictionary with product_categories, products, tags, and statuses lists.
     """
-    query = AzureUpdatesQuery(
-        search=search,
-        top=top,
-        skip=skip,
-        order_by=order_by,
-        count=True,
-        include_facets=False,
-    )
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(query.to_url(), timeout=30.0)
-        response.raise_for_status()
-
-    data = response.json()
-    total_count = data.get("@odata.count", 0)
-    items = data.get("value", [])
-
-    updates = []
-    for item in items:
-        update = _parse_item(item)
-        if update:
-            # Client-side status filter if specified
-            if status and (not update.status or update.status.lower() != status.lower()):
-                continue
-            updates.append(update)
-
-    return updates, total_count
-
-
-async def fetch_facets() -> dict:
-    """Fetch faceted counts without item data.
-
-    Returns:
-        Dictionary with facet data: product_categories, products, tags, statuses.
-    """
-    query = AzureUpdatesQuery(
-        top=0,
-        skip=0,
-        count=True,
-        include_facets=True,
-    )
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(query.to_url(), timeout=30.0)
-        response.raise_for_status()
-
-    data = response.json()
-    total_count = data.get("@odata.count", 0)
     facets_list = data.get("facets", [])
 
     # Convert facets list into a dict keyed by facet name
@@ -139,12 +81,63 @@ async def fetch_facets() -> dict:
         return sorted(result, key=lambda x: (-x["count"], x["name"]))
 
     return {
-        "total_count": total_count,
         "product_categories": extract_facet("ProductCategory"),
         "products": extract_facet("Product"),
         "tags": extract_facet("Tags"),
         "statuses": extract_facet("Status"),
     }
+
+
+async def fetch_updates(
+    search: str | None = None,
+    status: str | None = None,
+    top: int = 20,
+    skip: int = 0,
+    order_by: str = "created desc",
+    include_facets: bool = False,
+) -> tuple[list[AzureUpdate], int, dict | None]:
+    """Fetch and parse Azure Updates from the JSON API.
+
+    Args:
+        search: Optional search term for server-side full-text search.
+        status: Optional status filter (applied client-side from results).
+        top: Maximum number of results to return from the API.
+        skip: Number of results to skip (for pagination).
+        order_by: Sort order (default: "created desc").
+        include_facets: Whether to request and return faceted taxonomy counts.
+
+    Returns:
+        Tuple of (list of AzureUpdate objects, total count from API, parsed facets or None).
+    """
+    query = AzureUpdatesQuery(
+        search=search,
+        top=top,
+        skip=skip,
+        order_by=order_by,
+        count=True,
+        include_facets=include_facets,
+    )
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(query.to_url(), timeout=30.0)
+        response.raise_for_status()
+
+    data = response.json()
+    total_count = data.get("@odata.count", 0)
+    items = data.get("value", [])
+
+    updates = []
+    for item in items:
+        update = _parse_item(item)
+        if update:
+            # Client-side status filter if specified
+            if status and (not update.status or update.status.lower() != status.lower()):
+                continue
+            updates.append(update)
+
+    facets = _parse_facets(data) if include_facets else None
+
+    return updates, total_count, facets
 
 
 def _parse_item(item: dict) -> AzureUpdate | None:

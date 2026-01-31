@@ -8,9 +8,7 @@ from fastmcp import FastMCP
 # Suppress FastMCP's INFO logs to reduce console noise
 logging.getLogger("fastmcp").setLevel(logging.WARNING)
 
-from .tools.categories import azure_updates_list_categories
 from .tools.search import azure_updates_search
-from .tools.summarize import azure_updates_summarize
 
 # Create the MCP server
 mcp = FastMCP(
@@ -18,15 +16,14 @@ mcp = FastMCP(
     instructions=(
         "Query and search Azure service updates from the official JSON API. "
         "Use azure_updates_search to find, filter, and retrieve updates. "
-        "Use azure_updates_summarize for aggregate statistics and overviews. "
-        "Use azure_updates_list_categories to discover available category values."
+        "Set include_facets=True to get taxonomy counts (product categories, "
+        "products, tags, statuses). Use limit=0 with include_facets=True for "
+        "a facets-only response to discover available filter values."
     ),
 )
 
 # Register tools
 mcp.tool(azure_updates_search)
-mcp.tool(azure_updates_summarize)
-mcp.tool(azure_updates_list_categories)
 
 
 def main():
