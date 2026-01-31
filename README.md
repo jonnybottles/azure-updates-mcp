@@ -73,15 +73,15 @@ pip install --upgrade azure-updates-mcp
 ```
 
 
-## Quick Install
+## Quick Setup
 
-[![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0078d4?style=flat-square&logo=visualstudiocode)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uvx%22%2C%20%22args%22%3A%20%5B%22azure-updates-mcp%22%5D%7D)
-[![Install in Cursor](https://img.shields.io/badge/Install_in-Cursor-000000?style=flat-square&logo=cursor)](https://cursor.com/docs/context/mcp)
-[![Install in Claude Code](https://img.shields.io/badge/Install_in-Claude_Code-9b6bff?style=flat-square&logo=anthropic)](https://code.claude.com/docs/en/mcp)
-[![Install in Copilot CLI](https://img.shields.io/badge/Install_in-Copilot_CLI-28a745?style=flat-square&logo=github)](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
+[![Set up in VS Code](https://img.shields.io/badge/Set_up_in-VS_Code-0078d4?style=flat-square&logo=visualstudiocode)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uvx%22%2C%20%22args%22%3A%20%5B%22azure-updates-mcp%22%5D%7D)
+[![Set up in Cursor](https://img.shields.io/badge/Set_up_in-Cursor-000000?style=flat-square&logo=cursor)](https://cursor.com/docs/context/mcp)
+[![Set up in Claude Code](https://img.shields.io/badge/Set_up_in-Claude_Code-9b6bff?style=flat-square&logo=anthropic)](https://code.claude.com/docs/en/mcp)
+[![Set up in Copilot CLI](https://img.shields.io/badge/Set_up_in-Copilot_CLI-28a745?style=flat-square&logo=github)](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
 
-> **One-click install:** Click VS Code badge for automatic setup (requires `uv` installed)
-> **Manual install:** See instructions below for Cursor, Claude Code, Copilot CLI, or Claude Desktop
+> **One-click setup:** Click the VS Code badge for automatic configuration (requires `uv` installed)
+> **Manual setup:** See instructions below for Cursor, Claude Code, Copilot CLI, or Claude Desktop
 
 ## Features
 
