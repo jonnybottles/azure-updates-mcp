@@ -4,6 +4,56 @@ mcp-name: io.github.jonnybottles/azure-updates
 
 A Python-based MCP (Model Context Protocol) server that provides tools for querying and searching the Azure Updates RSS feed.
 
+## Requirements
+
+### General
+
+- **Python 3.9+**
+- An MCP-compatible client (Claude Desktop, Cursor, Claude Code, GitHub Copilot CLI, etc.)
+
+### Using `uvx` (Recommended)
+
+If you are installing or running the server via **`uvx`**, you must have **uv** installed first.
+
+- **uv** (includes `uvx`): https://github.com/astral-sh/uv
+
+Install uv:
+
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+irm https://astral.sh/uv/install.ps1 | iex
+```
+
+Verify installation:
+
+```bash
+uv --version
+uvx --version
+```
+
+> `uvx` allows you to run the MCP server without installing the package globally.
+
+### Using pip (Alternative)
+
+If you prefer not to use `uvx`, you can install the package directly with pip.
+
+```bash
+pip install azure-updates-mcp
+```
+
+In this case, `uv` / `uvx` is **not required**.
+
+### Optional (for development)
+
+- `git`
+- `pytest`
+- `ruff`
+
+---
+
 ## Quick Install
 
 [![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0078d4?style=flat-square&logo=visualstudiocode)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uvx%22%2C%20%22args%22%3A%20%5B%22azure-updates-mcp%22%5D%7D)
@@ -11,27 +61,23 @@ A Python-based MCP (Model Context Protocol) server that provides tools for query
 [![Install in Claude Code](https://img.shields.io/badge/Install_in-Claude_Code-9b6bff?style=flat-square&logo=anthropic)](https://code.claude.com/docs/en/mcp)
 [![Install in Copilot CLI](https://img.shields.io/badge/Install_in-Copilot_CLI-28a745?style=flat-square&logo=github)](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
 
-> **One-click install:** Click VS Code badge for automatic setup (requires [uv](https://github.com/astral-sh/uv) installed)
+> **One-click install:** Click VS Code badge for automatic setup (requires `uv` installed)
 > **Manual install:** See instructions below for Cursor, Claude Code, Copilot CLI, or Claude Desktop
 
 ## Features
 
-- **azure_updates_search** - Search and filter Azure updates by keyword, category, status, date range, or GUID
-- **azure_updates_summarize** - Get statistical overview and trends of Azure updates
-- **azure_updates_list_categories** - List all available Azure service categories
+- **azure_updates_search** – Search and filter Azure updates by keyword, category, status, date range, or GUID
+- **azure_updates_summarize** – Get statistical overview and trends of Azure updates
+- **azure_updates_list_categories** – List all available Azure service categories
 
 ## Prompt Examples
 
-Once connected to Claude Desktop, you can ask questions like:
+Once connected to an MCP client, you can ask questions like:
 
 1. **Get recent updates**: "Show me the 10 most recent Azure updates"
-
 2. **Search by keyword**: "Find all Azure updates related to Kubernetes or AKS"
-
 3. **Filter by status**: "What Azure features are currently in preview?"
-
 4. **Check for retirements**: "Are there any upcoming Azure service retirements I should know about?"
-
 5. **Get overview**: "Give me a summary of Azure update activity over the last 2 weeks"
 
 ## Installation
@@ -60,8 +106,6 @@ pip install -e ".[dev]"
 
 ### Run the MCP Server
 
-The server uses stdio transport by default, which is the recommended way to use MCP servers with Claude Desktop and other MCP clients:
-
 ```bash
 uvx azure-updates-mcp
 ```
@@ -75,10 +119,11 @@ azure-updates-mcp
 ### Connect from Claude Desktop
 
 Add to your Claude Desktop MCP config:
+
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**Using uvx (recommended - no installation needed)**
+**Using uvx (recommended)**
 
 ```json
 {
@@ -107,44 +152,16 @@ Add to your Claude Desktop MCP config:
 
 **Option 1: One-Click Install (Recommended)**
 
-Copy and paste this link into your browser address bar:
-
 ```
 cursor://anysphere.cursor-deeplink/mcp/install?name=azure-updates-mcp&config=eyJjb21tYW5kIjogInV2eCIsICJhcmdzIjogWyJhenVyZS11cGRhdGVzLW1jcCJdfQ==
 ```
 
-This will open Cursor and prompt you to install the MCP server automatically.
-
 **Option 2: Manual Configuration**
 
 Add to your Cursor MCP config:
+
 - macOS: `~/Library/Application Support/Cursor/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`
 - Windows: `%APPDATA%\Cursor\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`
-
-**Using uvx (recommended):**
-
-```json
-{
-  "mcpServers": {
-    "azure-updates": {
-      "command": "uvx",
-      "args": ["azure-updates-mcp"]
-    }
-  }
-}
-```
-
-**Using installed package:**
-
-```json
-{
-  "mcpServers": {
-    "azure-updates": {
-      "command": "azure-updates-mcp"
-    }
-  }
-}
-```
 
 ### Connect from Claude Code
 
@@ -152,23 +169,9 @@ Add to your Cursor MCP config:
 claude mcp add --transport stdio azure-updates -- uvx azure-updates-mcp
 ```
 
-Or if you have the package installed:
-
-```bash
-claude mcp add --transport stdio azure-updates -- azure-updates-mcp
-```
-
-Verify the server was added:
-
-```bash
-claude mcp list
-```
-
 ### Connect from GitHub Copilot CLI
 
-Add to your Copilot CLI MCP config (`~/.copilot/mcp-config.json`):
-
-**Using uvx (recommended)**
+Add to `~/.copilot/mcp-config.json`:
 
 ```json
 {
@@ -177,19 +180,6 @@ Add to your Copilot CLI MCP config (`~/.copilot/mcp-config.json`):
       "type": "stdio",
       "command": "uvx",
       "args": ["azure-updates-mcp"]
-    }
-  }
-}
-```
-
-**Using installed package**
-
-```json
-{
-  "mcpServers": {
-    "azure-updates": {
-      "type": "stdio",
-      "command": "azure-updates-mcp"
     }
   }
 }
@@ -198,14 +188,10 @@ Add to your Copilot CLI MCP config (`~/.copilot/mcp-config.json`):
 ## Development
 
 ```bash
-# Run tests
 pytest
-
-# Lint
 ruff check src/ tests/
 ```
 
 ## License
 
 MIT
-
