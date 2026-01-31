@@ -4,8 +4,8 @@ A Python-based MCP (Model Context Protocol) server that provides tools for query
 
 ## Quick Install
 
-[![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0078d4?style=flat-square&logo=visualstudiocode)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uv%22%2C%20%22args%22%3A%20%5B%22run%22%2C%20%22azure-updates-mcp%22%5D%7D)
-[![Install in Cursor](https://img.shields.io/badge/Install_in-Cursor-000000?style=flat-square&logo=cursor)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uv%22%2C%20%22args%22%3A%20%5B%22run%22%2C%20%22azure-updates-mcp%22%5D%7D)
+[![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0078d4?style=flat-square&logo=visualstudiocode)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uvx%22%2C%20%22args%22%3A%20%5B%22azure-updates-mcp%22%5D%7D)
+[![Install in Cursor](https://img.shields.io/badge/Install_in-Cursor-000000?style=flat-square&logo=cursor)](https://vscode.dev/redirect/mcp/install?name=azure-updates-mcp&config=%7B%22type%22%3A%20%22stdio%22%2C%20%22command%22%3A%20%22uvx%22%2C%20%22args%22%3A%20%5B%22azure-updates-mcp%22%5D%7D)
 [![Install in Claude Code](https://img.shields.io/badge/Install_in-Claude_Code-9b6bff?style=flat-square&logo=anthropic)](https://code.claude.com/docs/en/mcp)
 [![Install in Copilot CLI](https://img.shields.io/badge/Install_in-Copilot_CLI-28a745?style=flat-square&logo=github)](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/use-copilot-cli)
 
@@ -20,13 +20,23 @@ A Python-based MCP (Model Context Protocol) server that provides tools for query
 
 ## Installation
 
+### Install from PyPI
+
 ```bash
-pip install -e .
+uvx azure-updates-mcp
 ```
 
-For development:
+Or install with pip:
 
 ```bash
+pip install azure-updates-mcp
+```
+
+### Install from source (for development)
+
+```bash
+git clone https://github.com/YOUR-USERNAME/azure-updates-mcp.git
+cd azure-updates-mcp
 pip install -e ".[dev]"
 ```
 
@@ -37,7 +47,13 @@ pip install -e ".[dev]"
 The server uses stdio transport by default, which is the recommended way to use MCP servers with Claude Desktop and other MCP clients:
 
 ```bash
-python -m azure_updates_mcp.server
+uvx azure-updates-mcp
+```
+
+Or if installed with pip:
+
+```bash
+azure-updates-mcp
 ```
 
 ### Connect from Claude Desktop
@@ -46,28 +62,26 @@ Add to your Claude Desktop MCP config:
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**Option 1: Using uv (recommended)**
+**Using uvx (recommended - no installation needed)**
 
 ```json
 {
   "mcpServers": {
     "azure-updates": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/azure-updates-mcp", "azure-updates-mcp"]
+      "command": "uvx",
+      "args": ["azure-updates-mcp"]
     }
   }
 }
 ```
 
-**Option 2: Using Python directly**
+**Using installed package**
 
 ```json
 {
   "mcpServers": {
     "azure-updates": {
-      "command": "python",
-      "args": ["-m", "azure_updates_mcp.server"],
-      "cwd": "/path/to/azure-updates-mcp"
+      "command": "azure-updates-mcp"
     }
   }
 }
@@ -75,16 +89,14 @@ Add to your Claude Desktop MCP config:
 
 ### Connect from Claude Code
 
-**Option 1: Using uv (recommended)**
-
 ```bash
-claude mcp add --transport stdio azure-updates -- uv run azure-updates-mcp
+claude mcp add --transport stdio azure-updates -- uvx azure-updates-mcp
 ```
 
-**Option 2: Using Python directly**
+Or if you have the package installed:
 
 ```bash
-claude mcp add --transport stdio azure-updates -- python -m azure_updates_mcp.server
+claude mcp add --transport stdio azure-updates -- azure-updates-mcp
 ```
 
 Verify the server was added:
@@ -97,30 +109,28 @@ claude mcp list
 
 Add to your Copilot CLI MCP config (`~/.copilot/mcp-config.json`):
 
-**Option 1: Using uv (recommended)**
+**Using uvx (recommended)**
 
 ```json
 {
   "mcpServers": {
     "azure-updates": {
       "type": "stdio",
-      "command": "uv",
-      "args": ["run", "azure-updates-mcp"]
+      "command": "uvx",
+      "args": ["azure-updates-mcp"]
     }
   }
 }
 ```
 
-**Option 2: Using Python directly**
+**Using installed package**
 
 ```json
 {
   "mcpServers": {
     "azure-updates": {
       "type": "stdio",
-      "command": "python",
-      "args": ["-m", "azure_updates_mcp.server"],
-      "cwd": "/path/to/azure-updates-mcp"
+      "command": "azure-updates-mcp"
     }
   }
 }
