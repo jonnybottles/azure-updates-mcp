@@ -4,7 +4,20 @@
 
 mcp-name: io.github.jonnybottles/azure-updates
 
-A Python-based MCP (Model Context Protocol) server that provides tools for querying and searching [Azure Updates](https://azure.microsoft.com/en-us/updates/).
+Stay up-to-date with Azure platform changes through AI-powered natural language queries. This Python-based MCP (Model Context Protocol) server connects AI assistants like Claude to [Azure Updates](https://azure.microsoft.com/en-us/updates/), enabling you to search and filter Azure service announcements, feature releases, preview launches, and retirement notices—all through conversational queries.
+
+## What It Does
+
+Azure Updates MCP Server bridges the gap between Azure's official updates feed and your AI assistant, allowing you to:
+
+- **Search updates by keyword** - Ask about specific services, technologies, or features (e.g., "What's new with Azure Kubernetes Service?")
+- **Filter by status** - Find what's in Preview, Generally Available, or being Retired
+- **Track deprecations** - Stay ahead of service retirements and breaking changes
+- **Discover categories** - Explore available Azure products and services through faceted search
+- **Query by date range** - Find updates within specific timeframes
+- **Look up by GUID** - Retrieve specific announcements directly
+
+Perfect for developers, cloud architects, and IT professionals who need to monitor Azure platform evolution, plan migrations, or stay informed about new capabilities—without manually checking the Azure updates website.
 
 ## Requirements
 
